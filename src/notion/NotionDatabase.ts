@@ -26,7 +26,7 @@ export default class NotionDatabase extends NotionClient {
 			(notionPageData) => {
 				const notionProperties = notionPageData.properties;
 				return new NotionPage({
-					title: notionProperties.課題.title[0].text.content,
+					title: notionProperties.課題.title[0] ? notionProperties.課題.title[0].text.content : "",
 					dueDate: notionProperties.締切日時.date.start,
 					className: notionProperties.授業名.select.name,
 					taskId: notionProperties.panda_id?.rich_text[0] ? notionProperties.panda_id?.rich_text[0].text.content : "",
@@ -57,7 +57,7 @@ export default class NotionDatabase extends NotionClient {
 		const notionNewPage = new NotionPage({
 			title: pandaTask.taskName,
 			dueDate: pandaTask.dateToJPNString(),
-			className: pandaTask.className,
+			className: pandaTask.pandaClass.name,
 			taskId: pandaTask.taskId,
 			taskUrl: pandaTask.getTaskUrl(),
 		});

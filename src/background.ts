@@ -26,7 +26,7 @@ const main = async () => {
 	const notExistTasks = pandaTasks.filter(
 		(task) => !task.isExistNotion(taskDatabaseItems),
 	);
-	// notExistTasks.forEach(async (task) => await notionDatabase.pushTask(task));
+	notExistTasks.forEach(async (task) => await notionDatabase.pushTask(task));
 	console.log("課題の取得が終了しました")
 };
 

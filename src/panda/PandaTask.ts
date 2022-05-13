@@ -1,17 +1,18 @@
 import NotionDatabase from "../notion/NotionDatabase";
 import { PandaTaskType, PandaTaskData, ParsedPandaTaskData } from "./types";
 import NotionPage from "../notion/NotionPage";
+import PandaClass from "./PandaClass";
 
 export default abstract class PandaTask {
 	taskName: string;
 	dueDate: Date;
-	className: string;
+	pandaClass: PandaClass;
 	taskId: string;
 
-	constructor({ taskName, dueDate, className, taskId }: PandaTaskType) {
+	constructor({ taskName, dueDate, pandaClass, taskId }: PandaTaskType) {
 		this.taskName = taskName;
 		this.dueDate = this.fixDueDate(dueDate);
-		this.className = className;
+		this.pandaClass = pandaClass;
 		this.taskId = taskId;
 	}
 

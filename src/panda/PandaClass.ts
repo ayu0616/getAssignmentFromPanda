@@ -91,7 +91,7 @@ export default class PandaClass {
 				const parsedData = PandaTask.parseTaskData(assignmentData);
 				const pandaTaskData: PandaTaskType = Object.assign(
 					parsedData,
-					{ className: this.name },
+					{ pandaClass: this },
 				);
 				return new PandaAssignment(pandaTaskData);
 			},
