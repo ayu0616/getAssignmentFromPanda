@@ -1,0 +1,22 @@
+{
+    "manifest_version": 3,
+    "name": "get assignment from PandA",
+    "version": "0.0.1",
+    "background": {
+        "service_worker": "js/background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://panda.ecs.kyoto-u.ac.jp/portal/site/*"
+            ],
+            "js": [
+                "./js/background.js"
+            ]
+        }
+    ],
+    "permissions": [
+        "contextMenus",
+        "tabs"
+    ]
+}
