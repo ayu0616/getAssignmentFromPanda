@@ -8,13 +8,18 @@ export default class Helper {
 		const lastExecutedTimeNum = Number(lastExecutedTimeString);
 		const nowTime = new Date();
 		// 一定時間経っていたらtrue、経っていなかったらfalseを返す
-		const isEnded = (
-			(nowTime.getTime() - lastExecutedTimeNum) / 1000 / 60
-		) > waitMinutes;
+		const isEnded = ((nowTime.getTime() - lastExecutedTimeNum) / 1000 / 60) > waitMinutes;
 		// 一定時間経過していれば、今回実行するのでその時刻を記録しておく
 		if (isEnded) {
 			localStorage.setItem(localStorageItemName, nowTime.getTime().toString());
 		}
 		return isEnded;
+	}
+
+	/**文字列からHTML要素を作成 */
+	static createElementFromHTML(htmlString: string) {
+		const domParser = new DOMParser();
+		const doc = domParser.parseFromString(htmlString, "text/html");
+		return doc;
 	}
 }

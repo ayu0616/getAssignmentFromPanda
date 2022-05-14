@@ -25,19 +25,22 @@ export default abstract class PandaTask {
 	}
 
 	static parseTaskData(taskData: PandaTaskData): ParsedPandaTaskData {
-		const parsedData = {
-			taskName: taskData.title,
-			dueDate: new Date(taskData.dueTimeString),
-			taskId: taskData.id,
-		};
+		const parsedData = { taskName: taskData.title, dueDate: new Date(taskData.dueTimeString), taskId: taskData.id };
 		return parsedData;
 	}
+
+	/** Notionにタスクが存在しているかどうかチェックする */
 	isExistNotion(notionDatabaseItems: NotionPage[]): boolean {
 		const existTaskIds = notionDatabaseItems.map((item) => item.taskId);
 		return existTaskIds.includes(this.taskId);
 	}
 	pushToNotion(notionDatabase: NotionDatabase): void {}
+
+	/**課題の提出ページを返す */
 	abstract getTaskUrl(): string;
+
+	/**提出済みかどうかを調べる */
+	abstract isSubmitted(): boolean | Promise<boolean>;
 
 	/**締め切り時間を日本時間の文字列に変換する */
 	dateToJPNString() {

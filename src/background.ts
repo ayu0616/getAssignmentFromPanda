@@ -6,7 +6,9 @@
 import { NOTION_TOKEN, NOTION_DATABASE_ID } from "./helper/envs";
 import Helper from "./helper/Helper";
 import NotionDatabase from "./notion/NotionDatabase";
+import NotionPage from "./notion/NotionPage";
 import PandaClass from "./panda/PandaClass";
+import PandaSubmittedTask from "./panda/PandaSubmittedTask";
 import PandaTask from "./panda/PandaTask";
 
 const main = async () => {
@@ -14,20 +16,43 @@ const main = async () => {
 	if (!Helper.isIntervalEnded(5)) {
 		throw new Error("前回実行からまだ5分経っていないため実行を中止します");
 	}
-	console.log("課題を取得中")
+
+	console.log("課題を取得中");
+
+	// お気に入り登録している授業を取得
 	const pandaClasses = await PandaClass.createClasses();
+	// 授業から課題を取得
 	const pandaTasks: PandaTask[] = [];
 	for (let pandaClass of pandaClasses) {
 		const tasks = await pandaClass.createPandaTasks();
 		pandaTasks.push(...tasks);
 	}
+	// Notionのデータベースを取得
 	const notionDatabase = new NotionDatabase(NOTION_TOKEN, NOTION_DATABASE_ID);
 	const taskDatabaseItems = await notionDatabase.query();
-	const notExistTasks = pandaTasks.filter(
-		(task) => !task.isExistNotion(taskDatabaseItems),
-	);
-	notExistTasks.forEach(async (task) => await notionDatabase.pushTask(task));
-	console.log("課題の取得が終了しました")
+	// Notionに転記していない課題を抽出
+	const notExistTasks = pandaTasks.filter((task) => !task.isExistNotion(taskDatabaseItems));
+	// Notionに転記
+	notExistTasks.forEach((task) => notionDatabase.pushTask(task));
+
+	// 提出済みの課題を抽出
+	const submittedPandaTasks: PandaSubmittedTask[] = [];
+	for (let task of pandaTasks) {
+		if (await task.isSubmitted()) {
+			// 同じIDのNotionタスク
+			const notionTask = <NotionPage>taskDatabaseItems.find((item) => item.taskId === task.taskId);
+			const submittedTask = new PandaSubmittedTask(task, notionTask);
+			submittedPandaTasks.push(submittedTask);
+		}
+	}
+
+	// チェックが付いていない課題を抽出
+	const unCheckedTasks = submittedPandaTasks.filter((item) => !item.notionPage.isChecked);
+
+	// チェックを付ける
+	unCheckedTasks.forEach((task) => task.toggleTrue());
+
+	console.log("課題の取得が終了しました");
 };
 
 const test = async () => {
@@ -37,6 +62,6 @@ const test = async () => {
 };
 
 (async () => {
-	main().catch((error)=>console.log(error));
+	main().catch((error) => console.log(error));
 	// await test();
 })();

@@ -15,6 +15,4 @@ export default abstract class NotionClient {
 			"Notion-Version": this.NOTION_VERSION,
 		};
 	}
-
-	abstract query(filter: object): Promise<NotionPage[]>;
 }
