@@ -13,6 +13,14 @@
             "js": [
                 "./js/background.js"
             ]
+        },
+        {
+            "matches": [
+                "https://panda.ecs.kyoto-u.ac.jp/portal/tool/*"
+            ],
+            "css": [
+                "./css/taskPage.css"
+            ]
         }
     ],
     "permissions": [

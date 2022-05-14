@@ -1,0 +1,9 @@
+body {
+    display: flex;
+    justify-content: center;
+}
+
+body>div.portletBody {
+    max-width: 1000px;
+    margin: 0 30px;
+}
