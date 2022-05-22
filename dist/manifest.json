@@ -8,7 +8,7 @@
     "content_scripts": [
         {
             "matches": [
-                "https://panda.ecs.kyoto-u.ac.jp/portal/site/*"
+                "https://panda.ecs.kyoto-u.ac.jp/portal/*"
             ],
             "js": [
                 "./js/background.js"
