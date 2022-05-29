@@ -3,7 +3,7 @@
  * 例えば最終実行時刻を記録しておいて、そこから10分経つまではキャンセルさせるなど
  */
 
-import { NOTION_TOKEN, NOTION_DATABASE_ID } from "./helper/envs";
+import { NOTION_TOKEN, NOTION_DATABASE_ID, LOCAL_STORAGE_ITEM_NAME } from "./helper/envs";
 import Helper from "./helper/Helper";
 import NotionDatabase from "./notion/NotionDatabase";
 import NotionPage from "./notion/NotionPage";
@@ -53,6 +53,9 @@ const main = async () => {
 	unCheckedTasks.forEach((task) => task.toggleTrue());
 
 	console.log("課題の取得が終了しました");
+
+	// ローカルストレージに実行時間を記録する
+	localStorage.setItem(LOCAL_STORAGE_ITEM_NAME, new Date().getTime().toString());
 };
 
 const test = async () => {
