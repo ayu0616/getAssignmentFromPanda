@@ -1,4 +1,5 @@
 import { AVOID_CORS_URL } from "../helper/envs";
+import Helper from "../helper/Helper";
 import NotionClient from "./NotionClient";
 import { NotionPageClassMembers, NotionPageProperties, NotionUpdateProperties } from "./types";
 
@@ -11,10 +12,7 @@ export default class NotionPage extends NotionClient implements NotionPageClassM
 	taskUrl: string;
 	isChecked: boolean;
 
-	constructor(
-		token: string,
-		{ pageId, title, dueDate, className, taskId, taskUrl, isChecked }: NotionPageClassMembers,
-	) {
+	constructor(token: string, { pageId, title, dueDate, className, taskId, taskUrl, isChecked }: NotionPageClassMembers) {
 		super(token);
 		this.pageId = pageId;
 		this.title = title;
@@ -40,13 +38,33 @@ export default class NotionPage extends NotionClient implements NotionPageClassM
 		return this.toJson().toString();
 	}
 
-	update(properties: NotionUpdateProperties) {
+	async update(properties: NotionUpdateProperties) {
 		const url = `${AVOID_CORS_URL}https://api.notion.com/v1/pages/${this.pageId}`;
 		const options: RequestInit = {
 			method: "PATCH",
 			headers: this.createRequestHeader(),
 			body: JSON.stringify({ properties: properties }),
 		};
-		fetch(url, options).then(() => console.log(`Notionの "${this.title}" にチェックをつけました`));
+		return fetch(url, options);
+	}
+
+	setCheckBox(state: boolean) {
+		this.update({
+			チェック: {
+				checkbox: state,
+			},
+		}).then(() => {
+			console.log("Notionの課題'" + this.title + "'にチェックを付けました");
+			this.isChecked = state;
+		});
+	}
+
+	async isSubmitted() {
+		if (this.isChecked) return true;
+		const htmlString = await fetch(this.taskUrl).then((res) => res.text());
+		const doc = Helper.createElementFromHTML(htmlString);
+		const titleHighlightElem = <HTMLElement>doc.querySelector("body > div.portletBody > h3 > span.highlight");
+		const titleHighlightText = titleHighlightElem.innerText;
+		return titleHighlightText.includes("提出済み");
 	}
 }

@@ -6,9 +6,7 @@
 import { NOTION_TOKEN, NOTION_DATABASE_ID, LOCAL_STORAGE_ITEM_NAME } from "./helper/envs";
 import Helper from "./helper/Helper";
 import NotionDatabase from "./notion/NotionDatabase";
-import NotionPage from "./notion/NotionPage";
 import PandaClass from "./panda/PandaClass";
-import PandaSubmittedTask from "./panda/PandaSubmittedTask";
 import PandaTask from "./panda/PandaTask";
 
 const main = async () => {
@@ -24,6 +22,7 @@ const main = async () => {
 	// 授業から課題を取得
 	const pandaTasks: PandaTask[] = [];
 	for (let pandaClass of pandaClasses) {
+		// 各授業ごとに課題を取得
 		const tasks = await pandaClass.createPandaTasks();
 		pandaTasks.push(...tasks);
 	}
@@ -35,22 +34,14 @@ const main = async () => {
 	// Notionに転記
 	notExistTasks.forEach((task) => notionDatabase.pushTask(task));
 
-	// 提出済みの課題を抽出
-	const submittedPandaTasks: PandaSubmittedTask[] = [];
-	for (let task of pandaTasks) {
-		if (await task.isSubmitted()) {
-			// 同じIDのNotionタスク
-			const notionTask = <NotionPage>taskDatabaseItems.find((item) => item.taskId === task.taskId);
-			const submittedTask = new PandaSubmittedTask(task, notionTask);
-			submittedPandaTasks.push(submittedTask);
+	// 提出済みの課題にチェックを付ける
+	for (let item of taskDatabaseItems) {
+		// PandAのIDがなかったらスルー
+		if (!item.taskId) continue;
+		if (await item.isSubmitted()) {
+			item.setCheckBox(true);
 		}
 	}
-
-	// チェックが付いていない課題を抽出
-	const unCheckedTasks = submittedPandaTasks.filter((item) => !item.notionPage.isChecked);
-
-	// チェックを付ける
-	unCheckedTasks.forEach((task) => task.toggleTrue());
 
 	console.log("課題の取得が終了しました");
 
