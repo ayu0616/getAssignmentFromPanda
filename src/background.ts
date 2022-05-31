@@ -36,8 +36,8 @@ const main = async () => {
 
 	// 提出済みの課題にチェックを付ける
 	for (let item of taskDatabaseItems) {
-		// PandAのIDがなかったらスルー
-		if (!item.taskId) continue;
+		// PandAのIDがない、またはすでにチェック済みならスルー
+		if (!item.taskId || item.isChecked) continue;
 		if (await item.isSubmitted()) {
 			item.setCheckBox(true);
 		}

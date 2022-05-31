@@ -60,7 +60,6 @@ export default class NotionPage extends NotionClient implements NotionPageClassM
 	}
 
 	async isSubmitted() {
-		if (this.isChecked) return true;
 		const htmlString = await fetch(this.taskUrl).then((res) => res.text());
 		const doc = Helper.createElementFromHTML(htmlString);
 		const titleHighlightElem = <HTMLElement>doc.querySelector("body > div.portletBody > h3 > span.highlight");
